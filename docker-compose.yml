@@ -1,0 +1,17 @@
+services:
+
+  db:
+    image: postgres:16.4
+    restart: always
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: pgtester
+      POSTGRES_PASSWORD: pgtester
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    user: "1000:1000"
+
+volumes:
+  dbdata:
