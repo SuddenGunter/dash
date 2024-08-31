@@ -17,7 +17,11 @@ defmodule Dash.Application do
       # Start a worker by calling: Dash.Worker.start_link(arg)
       # {Dash.Worker, arg},
       # Start to serve requests, typically the last entry
-      DashWeb.Endpoint
+      DashWeb.Endpoint,
+
+      # TODO: must be created PER timer, also keep in mind that start_link will kill timer on liveview tab being closed
+      # Create timer
+      {Dash.Timer, name: Dash.Timer}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
