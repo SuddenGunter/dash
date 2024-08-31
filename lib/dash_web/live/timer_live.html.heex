@@ -1,0 +1,12 @@
+<div>
+  <section>
+    <%= @id %>
+    <%= if @timer_status == :stopped do %>
+      <.button phx-click="start">Start</.button>
+    <% end %>
+
+    <%= if @timer_status == :running do %>
+      <.button phx-click="stop">Stop</.button>
+    <% end %>
+  </section>
+</div>

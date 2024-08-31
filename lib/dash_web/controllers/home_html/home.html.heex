@@ -1,4 +1,9 @@
-<.flash_group flash={@flash} />
 <div>
-  <h1>Hello</h1>
+  <section>
+    <h1>Timer</h1>
+    <.simple_form :let={f} for={%{}} action={~p"/timer"}>
+      <.input field={f[:duration]} />
+      <.button>Start</.button>
+    </.simple_form>
+  </section>
 </div>

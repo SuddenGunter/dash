@@ -49,6 +49,7 @@ defmodule DashWeb do
     end
   end
 
+  @spec live_view() :: {:__block__, [], [{:__block__, [], [...]} | {:use, [...], [...]}, ...]}
   def live_view do
     quote do
       use Phoenix.LiveView,

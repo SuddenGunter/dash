@@ -18,6 +18,8 @@ defmodule DashWeb.Router do
     pipe_through :browser
 
     get "/", HomeController, :home
+    post "/timer", HomeController, :timer
+    live "/timer/:id", TimerLive, :timer_live
   end
 
   # Other scopes may use custom stacks.
