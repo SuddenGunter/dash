@@ -1,6 +1,8 @@
 <div>
   <section>
-    <%= @id %>
+    <%= @id %> <br />
+    <%= @time_left %> <br />
+
     <%= if @state == :stopped do %>
       <.button phx-click="start">Start</.button>
     <% end %>

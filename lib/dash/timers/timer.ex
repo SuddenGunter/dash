@@ -14,6 +14,7 @@ defmodule Dash.Timers.Timer do
   def changeset(timer, attrs) do
     timer
     |> cast(attrs, [:time_left, :state])
+    # time_left is not required cause zero value will fail this validation, and zero value is valid when timer is finished.
     |> validate_required([:time_left, :state])
     |> validate_change(:time_left, fn :time_left, time_left ->
       # max interval size is 8 hours for now
