@@ -11,7 +11,7 @@ defmodule DashWeb.TimerLive do
 
     if connected?(socket), do: Dash.TimerPubSub.subscribe(timer_id)
 
-    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
+    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: time_left(timer))}
   end
 
   @impl true
@@ -36,45 +36,57 @@ defmodule DashWeb.TimerLive do
     |> Dash.Timers.change_timer(%{state: :stopped, time_left: time_left})
     |> Repo.update!()
 
-    Dash.TimerPubSub.timer_changed(socket.assigns.id, %{
+    values = %{
       state: :stopped,
-      time_left: timer.time_left
-    })
+      time_left: time_left
+    }
 
-    {:noreply, assign(socket, state: :stopped, time_left: time_left)}
+    # for other users
+    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+
+    {:noreply, assign(socket, values)}
   end
 
   @impl true
   def handle_event("start", _unsigned_params, socket) do
     # todo: move upd db timer + notification to separate service layer, mb gen_stage
 
-    Dash.Timers.Timer
-    |> where(id: ^socket.assigns.id)
-    |> where(state: :stopped)
-    |> Repo.one!()
-    |> Dash.Timers.change_timer(%{state: :running})
+    timer =
+      Dash.Timers.Timer
+      |> where(id: ^socket.assigns.id)
+      |> where(state: :stopped)
+      |> Repo.one!()
+
+    timer
+    |> Dash.Timers.change_timer(%{state: :running, time_left: timer.time_left})
     |> Repo.update!()
 
-    Dash.TimerPubSub.timer_changed(socket.assigns.id, %{state: :running})
+    values = %{
+      state: :running,
+      time_left: timer.time_left
+    }
 
-    {:noreply, assign(socket, state: :running)}
+    # for other users
+    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+
+    {:noreply, assign(socket, values)}
   end
 
   @impl true
   def handle_info(%{state: state, time_left: time_left}, socket) do
-    {:noreply, assign(socket, state: state, time_left: time_left)}
-  end
-
-  @impl true
-  @spec handle_info(%{:state => any(), optional(any()) => any()}, any()) :: {:noreply, any()}
-  def handle_info(%{state: state}, socket) do
-    {:noreply, assign(socket, state: state)}
+    {:noreply, assign(socket, %{state: state, time_left: time_left})}
   end
 
   defp time_left(timer) do
-    diff =
-      DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
+    case timer.state do
+      :running ->
+        diff =
+          DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
 
-    Time.add(timer.time_left, -diff, :second)
+        Time.add(timer.time_left, -diff, :second)
+
+      :stopped ->
+        timer.time_left
+    end
   end
 end
