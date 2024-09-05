@@ -24,7 +24,7 @@ Hooks.Timer = {
         this.timer = setInterval(() => {
             if (timeLeft <= 0) {
                 clearInterval(this.timer);
-                // todo: push event to server
+                this.pushEvent("your_phx_event", { foo: "bar" })
                 return;
             }
             timeLeft -= 1;

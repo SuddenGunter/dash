@@ -58,7 +58,7 @@ defmodule DashWeb.TimerLive do
       |> Repo.one!()
 
     timer
-    |> Dash.Timers.change_timer(%{state: :running, time_left: timer.time_left})
+    |> Dash.Timers.change_timer(%{state: :running})
     |> Repo.update!()
 
     values = %{
@@ -68,6 +68,30 @@ defmodule DashWeb.TimerLive do
 
     # for other users
     Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+
+    {:noreply, assign(socket, values)}
+  end
+
+  @impl true
+  def handle_event("your_phx_event", _params, socket) do
+    timer =
+      Dash.Timers.Timer
+      |> where(id: ^socket.assigns.id)
+      |> where(state: :running)
+      # todo: handle error, cause it's ok: timer can be already stopped by some other user
+      |> Repo.one!()
+
+    time_left = time_left(timer)
+
+    # it's ok to do it as separate operation: optimistic lock will prevent concurrent updates
+    timer
+    |> Dash.Timers.change_timer(%{state: :stopped, time_left: time_left})
+    |> Repo.update!()
+
+    values = %{
+      state: :running,
+      time_left: time_left
+    }
 
     {:noreply, assign(socket, values)}
   end
@@ -83,7 +107,14 @@ defmodule DashWeb.TimerLive do
         diff =
           DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
 
-        Time.add(timer.time_left, -diff, :second)
+        Logger.info("timer.updated_at: #{timer.updated_at}")
+        diffTime = Time.from_seconds_after_midnight(diff)
+
+        if Time.compare(diffTime, timer.time_left) == :gt do
+          ~T[00:00:00]
+        else
+          Time.add(timer.time_left, -diff, :second)
+        end
 
       :stopped ->
         timer.time_left
