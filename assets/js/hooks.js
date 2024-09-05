@@ -1,15 +1,15 @@
 let Hooks = {};
 
 Hooks.Timer = {
-    // mounted() {
-    //     run();
-    // },
-
-    updated() {
-        run();
+    mounted() {
+        clearInterval(this.timer);
+        if (this.el.dataset.state === "running") {
+            timeLeft = this.parseTime(this.el.innerText);
+            this.startTimer(timeLeft);
+        }
     },
 
-    run() {
+    updated() {
         clearInterval(this.timer);
         if (this.el.dataset.state === "running") {
             timeLeft = this.parseTime(this.el.innerText);
