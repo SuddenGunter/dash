@@ -74,6 +74,7 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("your_phx_event", _params, socket) do
+    # TODO: what if client already sent an event, but the timer is not yet expired?
     timer =
       Dash.Timers.Timer
       |> where(id: ^socket.assigns.id)
