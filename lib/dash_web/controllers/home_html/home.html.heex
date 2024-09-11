@@ -1,9 +1,10 @@
-<div>
-  <section>
-    <h1>Timer</h1>
-    <.simple_form for={@form} action={~p"/timer"}>
-        <.input field={@form[:username]} label="Username"/>
-      <.button>Start</.button>
-    </.simple_form>
+<div class="border-2 p-4">
+  <section class="flex flex-col justify-center items-center">
+    <h1 class="text-4xl font-extrabold">Timer</h1>
+    <div>
+      <.simple_form for={@form} action={~p"/timer"}>
+        <.button>Start</.button>
+      </.simple_form>
+    </div>
   </section>
 </div>

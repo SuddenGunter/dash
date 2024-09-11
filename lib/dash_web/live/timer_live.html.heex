@@ -1,15 +1,18 @@
-<div>
+<div class="border-2 p-4">
   <!-- TODO: split into two different components: timer ongoing / stopped timer -->
   <%= if @time_left != ~T[00:00:00] do %>
-    <section>
-      <span id="time-left" data-state={@state} phx-hook="Timer"><%= @time_left %></span> <br />
+    <section class="flex flex-col justify-center items-center">
+      <span class="text-4xl font-extrabold" id="time-left" data-state={@state} phx-hook="Timer">
+        <%= @time_left %>
+      </span>
+      <br />
 
       <%= if @state == :stopped do %>
-        <.button phx-click="start">Start</.button>
+        <.button class="mt-10" phx-click="start">Start</.button>
       <% end %>
 
       <%= if @state == :running do %>
-        <.button phx-click="stop">Stop</.button>
+        <.button class="mt-10" phx-click="stop">Stop</.button>
       <% end %>
     </section>
   <% end %>

@@ -15,6 +15,7 @@ defmodule DashWeb.TimerLive do
   end
 
   @impl true
+  @spec handle_params(any(), any(), any()) :: {:noreply, any()}
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
@@ -73,7 +74,7 @@ defmodule DashWeb.TimerLive do
   end
 
   @impl true
-  def handle_event("your_phx_event", _params, socket) do
+  def handle_event("timer_live__completed", _params, socket) do
     # TODO: what if client already sent an event, but the timer is not yet expired?
     timer =
       Dash.Timers.Timer
