@@ -3,7 +3,7 @@ defmodule DashWeb.HomeController do
   require Logger
 
   def home(conn, _params) do
-    render(conn, :home)
+    render(conn, :home, form: Phoenix.Component.to_form(%{}))
   end
 
   @spec timer(Plug.Conn.t(), map()) :: Plug.Conn.t()
@@ -11,6 +11,7 @@ defmodule DashWeb.HomeController do
     case Dash.Timers.create_timer(%{:time_left => Time.new!(0, 30, 0), :state => :stopped}) do
       {:ok, x} ->
         Plug.Conn.put_status(conn, 303)
+        # TODO: try Phoenix.LiveView.Controller
         redirect(conn, to: ~p"/timer/#{x.id}")
 
       {:error, details} ->

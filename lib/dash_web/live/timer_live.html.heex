@@ -1,4 +1,5 @@
 <div>
+  <!-- TODO: split into two different components: timer ongoing / stopped timer -->
   <%= if @time_left != ~T[00:00:00] do %>
     <section>
       <span id="time-left" data-state={@state} phx-hook="Timer"><%= @time_left %></span> <br />
@@ -17,5 +18,4 @@
       <p>Timer finished</p>
     </section>
   <% end %>
-  <!-- TODO: timer completed section -->
 </div>

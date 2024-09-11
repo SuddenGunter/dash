@@ -1,7 +1,8 @@
 <div>
   <section>
     <h1>Timer</h1>
-    <.simple_form for={%{}} action={~p"/timer"}>
+    <.simple_form for={@form} action={~p"/timer"}>
+        <.input field={@form[:username]} label="Username"/>
       <.button>Start</.button>
     </.simple_form>
   </section>
