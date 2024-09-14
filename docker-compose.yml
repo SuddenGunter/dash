@@ -1,5 +1,18 @@
 services:
 
+  app:
+    image: ghcr.io/suddengunter/dash:v0.0.2
+    restart: always
+    environment:
+      SECRET_KEY_BASE: "supersecret_phoenix_secretxx"
+      PHX_HOST: "localhost:4000"
+      DATABASE_URL: "ecto://pgtester:pgtester@db:5432/dash"      
+    depends_on:
+      - db
+    user: "1000:1000"
+    ports:
+      - 4000:4000
+
   db:
     image: postgres:16.4
     restart: always
