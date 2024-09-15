@@ -1,7 +1,7 @@
 services:
 
   app:
-    image: ghcr.io/suddengunter/dash:v0.0.3
+    image: ghcr.io/suddengunter/dash:v0.0.5
     restart: always
     environment:
       SECRET_KEY_BASE: "miTUGMZnTmNbVABoFdtQbbB9escrb59GqhYcW08dmoMv25iNN2EtII2UpiO9UgpB"
