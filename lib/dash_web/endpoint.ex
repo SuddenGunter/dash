@@ -7,7 +7,7 @@ defmodule DashWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_dash_key",
-    signing_salt: "QhbaAF0x",
+    signing_salt: "ZRu1wX0m",
     same_site: "Lax"
   ]
 
@@ -31,7 +31,6 @@ defmodule DashWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :dash
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,
