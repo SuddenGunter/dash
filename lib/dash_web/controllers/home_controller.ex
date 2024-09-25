@@ -8,14 +8,18 @@ defmodule DashWeb.HomeController do
 
   @spec timer(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def timer(conn, _params) do
-    case Dash.Timers.create_timer(%{:time_left => Time.new!(0, 30, 0), :state => :stopped}) do
+    # case Dash.Timers.create_timer(%{:time_left => Time.new!(0, 30, 0), :state => :stopped}) do
+    case Dash.Timers.DynamicSupervisor.start_child(%{
+           time_left: Time.new!(0, 30, 0)
+         }) do
       {:ok, x} ->
         Plug.Conn.put_status(conn, 303)
         # TODO: try Phoenix.LiveView.Controller
         redirect(conn, to: ~p"/timer/#{x.id}")
 
-      {:error, details} ->
-        Logger.error("failed to start timer", details)
+      {:error, reason} ->
+        Logger.error(%{reason: reason})
+        throw(:error)
     end
   end
 end
