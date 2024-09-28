@@ -1,4 +1,7 @@
 defmodule Dash.TimerPubSub do
+  @moduledoc """
+  PubSub module for timers. Allows multiple users to know if timer was stopped or started.
+  """
   use Agent
   alias Phoenix.PubSub
 

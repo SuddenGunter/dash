@@ -43,7 +43,7 @@ defmodule DashWeb do
         layouts: [html: DashWeb.Layouts]
 
       import Plug.Conn
-      import DashWeb.Gettext
+      use Gettext, backend: DashWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +85,7 @@ defmodule DashWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import DashWeb.CoreComponents
-      import DashWeb.Gettext
+      use Gettext, backend: DashWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

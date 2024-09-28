@@ -1,4 +1,7 @@
 defmodule Dash.Idseq.Idseq do
+  @moduledoc """
+  ID sequence generator. Generates unique IDs for timers.
+  """
   use GenServer
 
   def start_link([]) do
@@ -22,10 +25,11 @@ defmodule Dash.Idseq.Idseq do
 
   @impl true
   def handle_call(:next_id, _from, %{last_id: last_id, sqids: sqids}) do
+    # credo:disable-for-next-line
     # TODO: not a secure approach for public-facing IDs, but ok for now
     new_last_id = last_id + 1
-    resultId = Sqids.encode!(sqids, [new_last_id])
+    result_id = Sqids.encode!(sqids, [new_last_id])
 
-    {:reply, resultId, %{last_id: new_last_id, sqids: sqids}}
+    {:reply, result_id, %{last_id: new_last_id, sqids: sqids}}
   end
 end

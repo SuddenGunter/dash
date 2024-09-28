@@ -1,4 +1,8 @@
 defmodule Dash.Timers.Timer do
+  @moduledoc """
+  Timer module, contains state of a single timer. Can be started, stopped and observed.
+  Stops itself if there are no observers or if it has been running for more than 12 hours.
+  """
   require Logger
   use GenServer
 
@@ -16,7 +20,7 @@ defmodule Dash.Timers.Timer do
         }
       }) do
     Logger.info(%{timer_id: name, state: state})
-    Process.send_after(self(), :check_at_least_one_user, 10000)
+    Process.send_after(self(), :check_at_least_one_user, 10_000)
 
     {:ok, Map.merge(state, %{state: :stopped, id: name, observers: 0})}
   end
@@ -102,7 +106,7 @@ defmodule Dash.Timers.Timer do
     new_observers = state.observers - 1
 
     if new_observers == 0 do
-      Process.send_after(self(), :check_at_least_one_user, 15000)
+      Process.send_after(self(), :check_at_least_one_user, 15_000)
 
       {:noreply, %{state | :observers => new_observers}}
     else
@@ -136,9 +140,9 @@ defmodule Dash.Timers.Timer do
     diff =
       DateTime.diff(DateTime.utc_now(), started_at, :second)
 
-    diffTime = Time.from_seconds_after_midnight(diff)
+    diff_time = Time.from_seconds_after_midnight(diff)
 
-    if Time.compare(diffTime, time_left) == :gt do
+    if Time.compare(diff_time, time_left) == :gt do
       ~T[00:00:00]
     else
       Time.add(time_left, -diff, :second)

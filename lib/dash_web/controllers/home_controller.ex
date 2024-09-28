@@ -23,7 +23,6 @@ defmodule DashWeb.HomeController do
       })
 
     Plug.Conn.put_status(conn, 303)
-    # TODO: try Phoenix.LiveView.Controller
     redirect(conn, to: ~p"/timer/#{timer.id}")
   end
 end

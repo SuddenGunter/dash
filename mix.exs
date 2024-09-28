@@ -32,7 +32,6 @@ defmodule Dash.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:sqids, "~> 0.1.3"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -56,7 +55,11 @@ defmodule Dash.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:sqids, "~> 0.1.3"},
+      # linters
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

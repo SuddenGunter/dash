@@ -1,14 +1,14 @@
 defmodule DashWeb.TimerLive do
-  require Logger
+  alias Dash.Timers.Timer
   use DashWeb, :live_view
 
   @impl true
   def mount(params, _session, socket) do
     timer_id = params["id"]
-    timer = Dash.Timers.Timer.get(timer_id)
+    timer = Timer.get(timer_id)
 
     if connected?(socket) do
-      Dash.Timers.Timer.observe(timer_id, self())
+      Timer.observe(timer_id, self())
       Dash.TimerPubSub.subscribe(timer_id)
     end
 
@@ -23,7 +23,7 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("stop", _unsigned_params, socket) do
-    timer = Dash.Timers.Timer.stop(socket.assigns.id)
+    timer = Timer.stop(socket.assigns.id)
 
     values = %{
       state: :stopped,
@@ -38,7 +38,7 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("start", _unsigned_params, socket) do
-    timer = Dash.Timers.Timer.run(socket.assigns.id)
+    timer = Timer.run(socket.assigns.id)
 
     values = %{
       state: :running,
@@ -53,8 +53,7 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("timer_live__completed", _params, socket) do
-    # TODO: what if client already sent an event, but the timer is not yet expired?
-    timer = Dash.Timers.Timer.stop(socket.assigns.id)
+    timer = Timer.stop(socket.assigns.id)
 
     values = %{
       state: :running,
