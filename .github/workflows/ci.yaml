@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OTP and Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 27
+          elixir-version: 1.17.3
+
+      - run: mix deps.get
+      - run: MIX_ENV=test mix do compile --warnings-as-errors, test
