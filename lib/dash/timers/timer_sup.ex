@@ -1,27 +1,32 @@
 defmodule Dash.Timers.Supervisor do
+  alias Dash.Idseq.Idseq
+  alias Dash.Timers.Timer
+
+  @moduledoc """
+  Dynamically creates timers. If timer exits/crashes, it is not restarted.
+  """
+
   use DynamicSupervisor
 
   def start_link(init_arg) do
     DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
-  # TODO: use options pattern
   def start_child(state) do
-    id = Dash.Idseq.Idseq.next_id()
+    id = Idseq.next_id()
 
     spec = %{
-      id: Dash.Timers.Timer,
-      start: {Dash.Timers.Timer, :start_link, [id, state]},
+      id: Timer,
+      start: {Timer, :start_link, [id, state]},
       restart: :transient
     }
 
     case DynamicSupervisor.start_child(__MODULE__, spec) do
-      {:ok, _PID} ->
+      {:ok, _pid} ->
         {:ok, %{id: id}}
 
       {:error, reason} ->
         {:error, reason}
-        # TODO with
     end
   end
 

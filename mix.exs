@@ -56,9 +56,10 @@ defmodule Dash.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      
       {:sqids, "~> 0.1.3"},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+      # linters
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
