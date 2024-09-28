@@ -20,7 +20,6 @@ defmodule DashWeb.Router do
     get "/", HomeController, :home
     post "/timer", HomeController, :timer
     live "/timer/:id", TimerLive, :timer_live
-    live "/editlive", TimerEditLive, :timer_edit_live
   end
 
   # Other scopes may use custom stacks.
