@@ -7,13 +7,11 @@ defmodule Dash.Timers.Supervisor do
 
   # TODO: use options pattern
   def start_child(state) do
-    # TODO: proper ID generation / squids
-    unix_time = System.system_time(:second)
-    id = Integer.to_string(unix_time)
+    id = Dash.Idseq.Idseq.next_id()
 
     spec = %{
       id: Dash.Timers.Timer,
-      start: {Dash.Timers.Timer, :start_link, [id, {unix_time, state}]},
+      start: {Dash.Timers.Timer, :start_link, [id, {DateTime.utc_now(), state}]},
       restart: :transient
     }
 
