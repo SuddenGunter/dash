@@ -11,7 +11,7 @@ defmodule Dash.Timers.Supervisor do
 
     spec = %{
       id: Dash.Timers.Timer,
-      start: {Dash.Timers.Timer, :start_link, [id, {DateTime.utc_now(), state}]},
+      start: {Dash.Timers.Timer, :start_link, [id, state]},
       restart: :transient
     }
 

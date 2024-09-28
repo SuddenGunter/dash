@@ -4,17 +4,13 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def mount(params, _session, socket) do
-    # TODO:
-    # Ask dynamicSupervisor to start timer process (probably genserver or statem)
-    # if it's already started - just return it
-    # Monitor liveview from timer OR Link timer to liveview pid and if there are no more liveviews linked to timer for over 1 minute - kill timer
-    # Process.send_after(self(), :timeout, 5000) schedules a message to be sent after 5 seconds.
-    # Process.cancel_timer/1 cancels the scheduled message if you receive a :cancel message first.
-
     timer_id = params["id"]
     timer = Dash.Timers.Timer.get(timer_id)
 
-    if connected?(socket), do: Dash.TimerPubSub.subscribe(timer_id)
+    if connected?(socket) do
+      Dash.Timers.Timer.observe(timer_id, self())
+      Dash.TimerPubSub.subscribe(timer_id)
+    end
 
     {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
   end
@@ -42,9 +38,7 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("start", _unsigned_params, socket) do
-    timer = Dash.Timers.Timer.get(socket.assigns.id)
-
-    Dash.Timers.Timer.run(socket.assigns.id)
+    timer = Dash.Timers.Timer.run(socket.assigns.id)
 
     values = %{
       state: :running,

@@ -1,8 +1,11 @@
 defmodule Dash.Timers.Timer do
+  require Logger
   use GenServer
 
   def start_link(name, args) do
-    GenServer.start_link(__MODULE__, args, name: {:via, Registry, {Dash.Timers.Registry, name}})
+    GenServer.start_link(__MODULE__, {name, args},
+      name: {:via, Registry, {Dash.Timers.Registry, name}}
+    )
   end
 
   @impl true
@@ -12,7 +15,10 @@ defmodule Dash.Timers.Timer do
           time_left: _time_left
         }
       }) do
-    {:ok, Map.merge(state, %{state: :stopped, id: name})}
+    Logger.info(%{timer_id: name, state: state})
+    Process.send_after(self(), :check_at_least_one_user, 10000)
+
+    {:ok, Map.merge(state, %{state: :stopped, id: name, observers: 0})}
   end
 
   def stop(id) do
@@ -23,14 +29,26 @@ defmodule Dash.Timers.Timer do
     GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :run)
   end
 
+  def observe(id, observer) do
+    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, {:observe, observer})
+  end
+
   def get(id) do
     GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :get)
   end
 
-  @impl true
   def handle_call(:get, _from, state) do
     time_left = time_left(state)
     {:reply, %{state | :time_left => time_left}, state}
+  end
+
+  @impl true
+  def handle_call({:observe, observer}, _from, %{observers: observers} = state) do
+    Process.monitor(observer)
+
+    time_left = time_left(state)
+
+    {:reply, %{state | :time_left => time_left}, %{state | :observers => observers + 1}}
   end
 
   @impl true
@@ -43,7 +61,6 @@ defmodule Dash.Timers.Timer do
         :stop,
         _from,
         %{
-          id: id,
           time_left: _time_left,
           started_at: _started_at,
           state: :running
@@ -51,12 +68,12 @@ defmodule Dash.Timers.Timer do
       ) do
     tl = time_left(state)
 
-    new_state = %{
-      id: id,
-      time_left: tl,
-      state: :stopped,
-      started_at: nil
-    }
+    new_state =
+      Map.merge(state, %{
+        time_left: tl,
+        state: :stopped,
+        started_at: nil
+      })
 
     {:reply, new_state, new_state}
   end
@@ -68,17 +85,47 @@ defmodule Dash.Timers.Timer do
   end
 
   @impl true
-  def handle_call(:run, _from, %{id: id, time_left: time_left}) do
+  def handle_call(:run, _from, state) do
     started_at = DateTime.utc_now()
 
-    new_state = %{
-      id: id,
-      time_left: time_left,
-      state: :running,
-      started_at: started_at
-    }
+    new_state =
+      Map.merge(state, %{
+        state: :running,
+        started_at: started_at
+      })
 
     {:reply, new_state, new_state}
+  end
+
+  @impl true
+  def handle_info({:DOWN, _, _, _, _}, state) do
+    new_observers = state.observers - 1
+
+    if new_observers == 0 do
+      Process.send_after(self(), :check_at_least_one_user, 15000)
+
+      {:noreply, %{state | :observers => new_observers}}
+    else
+      {:noreply, %{state | :observers => new_observers}}
+    end
+  end
+
+  @impl true
+  def handle_info(:check_at_least_one_user, state) do
+    if state.observers == 0 do
+      Logger.info(%{timer_id: state.id, msg: "Timer has no observers, stopping"})
+      {:stop, :normal, state}
+    else
+      # no timer can live over 12h, even if there are observers
+      Process.send_after(self(), :timeout, 43_200_000)
+      {:noreply, state}
+    end
+  end
+
+  @impl true
+  def handle_info(:timeout, state) do
+    Logger.error("Timer #{state.id} has timed out")
+    {:stop, :timeout, state}
   end
 
   defp time_left(%{state: :stopped, time_left: time_left}) do
