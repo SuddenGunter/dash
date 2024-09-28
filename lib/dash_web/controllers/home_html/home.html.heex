@@ -1,9 +1,12 @@
 <div class="border-2 p-4">
   <section class="flex flex-col justify-center items-center">
-    <h1 class="text-4xl font-extrabold">Timer</h1>
+    <h1 class="text-5xl font-extrabold">Select timer duration</h1>
     <div>
       <.simple_form for={@form} action={~p"/timer"}>
-        <.button>Start</.button>
+        <.button name="duration" value="30">00:30:00</.button>
+        <.button name="duration" value="60">01:00:00</.button>
+        <.button name="duration" value="90">01:30:00</.button>
+        <.button name="duration" value="120">02:00:00</.button>
       </.simple_form>
     </div>
   </section>
