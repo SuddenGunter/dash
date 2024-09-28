@@ -7,18 +7,23 @@ defmodule DashWeb.HomeController do
   end
 
   @spec timer(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def timer(conn, _params) do
-    case Dash.Timers.Supervisor.start_child(%{
-           time_left: Time.new!(0, 30, 0)
-         }) do
-      {:ok, x} ->
-        Plug.Conn.put_status(conn, 303)
-        # TODO: try Phoenix.LiveView.Controller
-        redirect(conn, to: ~p"/timer/#{x.id}")
+  def timer(conn, %{"duration" => duration}) do
+    duration =
+      case Integer.parse(duration) do
+        {num, _} when duration > 0 ->
+          num
 
-      {:error, reason} ->
-        Logger.error(%{reason: reason})
-        throw(:error)
-    end
+        _ ->
+          raise ArgumentError, "Invalid duration"
+      end
+
+    {:ok, timer} =
+      Dash.Timers.Supervisor.start_child(%{
+        time_left: Time.from_seconds_after_midnight(duration * 60)
+      })
+
+    Plug.Conn.put_status(conn, 303)
+    # TODO: try Phoenix.LiveView.Controller
+    redirect(conn, to: ~p"/timer/#{timer.id}")
   end
 end
