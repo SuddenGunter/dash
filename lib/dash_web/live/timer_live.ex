@@ -2,129 +2,104 @@ defmodule DashWeb.TimerLive do
   require Logger
   use DashWeb, :live_view
 
-  # @impl true
-  # def mount(params, _session, socket) do
-  #   # TODO:
-  #   # Ask dynamicSupervisor to start timer process (probably genserver or statem)
-  #   # if it's already started - just return it
-  #   # Monitor liveview from timer OR Link timer to liveview pid and if there are no more liveviews linked to timer for over 1 minute - kill timer
-  #   # Process.send_after(self(), :timeout, 5000) schedules a message to be sent after 5 seconds.
-  #   # Process.cancel_timer/1 cancels the scheduled message if you receive a :cancel message first.
+  @impl true
+  def mount(params, _session, socket) do
+    # TODO:
+    # Ask dynamicSupervisor to start timer process (probably genserver or statem)
+    # if it's already started - just return it
+    # Monitor liveview from timer OR Link timer to liveview pid and if there are no more liveviews linked to timer for over 1 minute - kill timer
+    # Process.send_after(self(), :timeout, 5000) schedules a message to be sent after 5 seconds.
+    # Process.cancel_timer/1 cancels the scheduled message if you receive a :cancel message first.
 
-  #   timer_id = params["id"]
-  #   timer = Dash.Timers.get_timer!(timer_id)
+    timer_id = params["id"]
+    timer = Dash.Timers.Timer.get(timer_id)
 
-  #   if connected?(socket), do: Dash.TimerPubSub.subscribe(timer_id)
+    if connected?(socket), do: Dash.TimerPubSub.subscribe(timer_id)
 
-  #   {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: time_left(timer))}
-  # end
+    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: time_left(timer))}
+  end
 
-  # @impl true
-  # @spec handle_params(any(), any(), any()) :: {:noreply, any()}
-  # def handle_params(_params, _uri, socket) do
-  #   {:noreply, socket}
-  # end
+  @impl true
+  @spec handle_params(any(), any(), any()) :: {:noreply, any()}
+  def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
+  end
 
-  # @impl true
-  # def handle_event("stop", _unsigned_params, socket) do
-  #   # todo: move upd db timer + notification to separate service layer, mb gen_stage
-  #   timer =
-  #     Dash.Timers.Timer
-  #     |> where(id: ^socket.assigns.id)
-  #     |> where(state: :running)
-  #     # todo: handle error, cause it's ok: timer can be already stopped by some other user
-  #     |> Repo.one!()
+  @impl true
+  def handle_event("stop", _unsigned_params, socket) do
+    timer = Dash.Timers.Timer.get(socket.assigns.id)
+    time_left = time_left(timer)
 
-  #   time_left = time_left(timer)
+    # it's ok to do it as separate operation: optimistic lock will prevent concurrent updates
+    Dash.Timers.Timer.stop(socket.assigns.id, time_left)
 
-  #   # it's ok to do it as separate operation: optimistic lock will prevent concurrent updates
-  #   timer
-  #   |> Dash.Timers.change_timer(%{state: :stopped, time_left: time_left})
-  #   |> Repo.update!()
+    values = %{
+      state: :stopped,
+      time_left: time_left
+    }
 
-  #   values = %{
-  #     state: :stopped,
-  #     time_left: time_left
-  #   }
+    # for other users
+    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
 
-  #   # for other users
-  #   Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+    {:noreply, assign(socket, values)}
+  end
 
-  #   {:noreply, assign(socket, values)}
-  # end
+  @impl true
+  def handle_event("start", _unsigned_params, socket) do
+    timer = Dash.Timers.Timer.get(socket.assigns.id)
 
-  # @impl true
-  # def handle_event("start", _unsigned_params, socket) do
-  #   # todo: move upd db timer + notification to separate service layer, mb gen_stage
+    Dash.Timers.Timer.run(socket.assigns.id)
 
-  #   timer =
-  #     Dash.Timers.Timer
-  #     |> where(id: ^socket.assigns.id)
-  #     |> where(state: :stopped)
-  #     |> Repo.one!()
+    values = %{
+      state: :running,
+      time_left: timer.time_left
+    }
 
-  #   timer
-  #   |> Dash.Timers.change_timer(%{state: :running})
-  #   |> Repo.update!()
+    # for other users
+    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
 
-  #   values = %{
-  #     state: :running,
-  #     time_left: timer.time_left
-  #   }
+    {:noreply, assign(socket, values)}
+  end
 
-  #   # for other users
-  #   Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+  @impl true
+  def handle_event("timer_live__completed", _params, socket) do
+    # TODO: what if client already sent an event, but the timer is not yet expired?
+    timer = Dash.Timers.Timer.get(socket.assigns.id)
 
-  #   {:noreply, assign(socket, values)}
-  # end
+    time_left = time_left(timer)
 
-  # @impl true
-  # def handle_event("timer_live__completed", _params, socket) do
-  #   # TODO: what if client already sent an event, but the timer is not yet expired?
-  #   timer =
-  #     Dash.Timers.Timer
-  #     |> where(id: ^socket.assigns.id)
-  #     |> where(state: :running)
-  #     # todo: handle error, cause it's ok: timer can be already stopped by some other user
-  #     |> Repo.one!()
+    Dash.Timers.Timer.stop(socket.assigns.id, time_left)
 
-  #   time_left = time_left(timer)
+    values = %{
+      state: :running,
+      time_left: time_left
+    }
 
-  #   # it's ok to do it as separate operation: optimistic lock will prevent concurrent updates
-  #   timer
-  #   |> Dash.Timers.change_timer(%{state: :stopped, time_left: time_left})
-  #   |> Repo.update!()
+    {:noreply, assign(socket, values)}
+  end
 
-  #   values = %{
-  #     state: :running,
-  #     time_left: time_left
-  #   }
+  @impl true
+  def handle_info(%{state: state, time_left: time_left}, socket) do
+    {:noreply, assign(socket, %{state: state, time_left: time_left})}
+  end
 
-  #   {:noreply, assign(socket, values)}
-  # end
+  defp time_left(timer) do
+    case timer.state do
+      :running ->
+        diff =
+          DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
 
-  # @impl true
-  # def handle_info(%{state: state, time_left: time_left}, socket) do
-  #   {:noreply, assign(socket, %{state: state, time_left: time_left})}
-  # end
+        Logger.info("timer.updated_at: #{timer.updated_at}")
+        diffTime = Time.from_seconds_after_midnight(diff)
 
-  # defp time_left(timer) do
-  #   case timer.state do
-  #     :running ->
-  #       diff =
-  #         DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
+        if Time.compare(diffTime, timer.time_left) == :gt do
+          ~T[00:00:00]
+        else
+          Time.add(timer.time_left, -diff, :second)
+        end
 
-  #       Logger.info("timer.updated_at: #{timer.updated_at}")
-  #       diffTime = Time.from_seconds_after_midnight(diff)
-
-  #       if Time.compare(diffTime, timer.time_left) == :gt do
-  #         ~T[00:00:00]
-  #       else
-  #         Time.add(timer.time_left, -diff, :second)
-  #       end
-
-  #     :stopped ->
-  #       timer.time_left
-  #   end
-  # end
+      :stopped ->
+        timer.time_left
+    end
+  end
 end

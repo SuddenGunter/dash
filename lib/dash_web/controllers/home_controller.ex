@@ -9,7 +9,7 @@ defmodule DashWeb.HomeController do
   @spec timer(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def timer(conn, _params) do
     # case Dash.Timers.create_timer(%{:time_left => Time.new!(0, 30, 0), :state => :stopped}) do
-    case Dash.Timers.DynamicSupervisor.start_child(%{
+    case Dash.Timers.Supervisor.start_child(%{
            time_left: Time.new!(0, 30, 0)
          }) do
       {:ok, x} ->

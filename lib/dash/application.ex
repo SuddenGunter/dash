@@ -11,7 +11,7 @@ defmodule Dash.Application do
       DashWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dash, :dns_cluster_query) || :ignore},
       {Registry, [keys: :unique, name: Dash.Timers.Registry]},
-      Dash.Timers.DynamicSupervisor,
+      Dash.Timers.Supervisor,
       {Phoenix.PubSub, name: Dash.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Dash.Finch},

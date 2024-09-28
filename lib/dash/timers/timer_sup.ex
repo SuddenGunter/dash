@@ -1,4 +1,4 @@
-defmodule Dash.Timers.DynamicSupervisor do
+defmodule Dash.Timers.Supervisor do
   use DynamicSupervisor
 
   def start_link(init_arg) do
@@ -9,16 +9,17 @@ defmodule Dash.Timers.DynamicSupervisor do
   def start_child(state) do
     # TODO: proper ID generation / squids
     unix_time = System.system_time(:second)
+    id = Integer.to_string(unix_time)
 
     spec = %{
       id: Dash.Timers.Timer,
-      start: {Dash.Timers.Timer, :start_link, [unix_time, {unix_time, state}]},
+      start: {Dash.Timers.Timer, :start_link, [id, {unix_time, state}]},
       restart: :transient
     }
 
     case DynamicSupervisor.start_child(__MODULE__, spec) do
       {:ok, _PID} ->
-        {:ok, %{id: unix_time}}
+        {:ok, %{id: id}}
 
       {:error, reason} ->
         {:error, reason}
@@ -58,15 +59,33 @@ defmodule Dash.Timers.Timer do
     {:ok, Map.merge(state, %{state: :stopped, id: name})}
   end
 
+  def stop(id, time_left) do
+    # TODO: remove, only allow to stop + recalculate time left internally
+    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, {:stop, time_left})
+  end
+
+  def run(id) do
+    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :run)
+  end
+
+  def get(id) do
+    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :get)
+  end
+
   @impl true
-  def handle_call(:stop, _from, %{
+  def handle_call(:get, _from, state) do
+    {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:stop, new_time_left}, _from, %{
         id: id,
-        time_left: time_left,
+        time_left: _time_left,
         state: _state
       }) do
     new_state = %{
       id: id,
-      time_left: time_left,
+      time_left: new_time_left,
       state: :stopped
     }
 
