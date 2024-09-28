@@ -1,23 +1,10 @@
 import Config
 
-# Configure your database
-#
-# The MIX_TEST_PARTITION environment variable can be used
-# to provide built-in test partitioning in CI environment.
-# Run `mix help test` for more information.
-config :dash, Dash.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "dash_test#{System.get_env("MIX_TEST_PARTITION")}",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
-
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :dash, DashWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "FE8FJTOe7zMffpB1WpuImN2wInWVvL+ux0ylpndXIl/pVyXoSYF9DQkLID2T9IFy",
+  secret_key_base: "m5bA25v/ImXE29Y8zqS14QugxyVX83AL6i+BmGrMDYpR5RjqqgCTBOvQUANUDexS",
   server: false
 
 # In test we don't send emails

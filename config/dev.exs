@@ -1,16 +1,5 @@
 import Config
 
-# Configure your database
-config :dash, Dash.Repo,
-  username: "pgtester",
-  password: "pgtester",
-  hostname: "localhost",
-  port: 15432,
-  database: "dash",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
@@ -24,7 +13,7 @@ config :dash, DashWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "PQChDi5iUghBZbnr7RKBf+UlFk8DnfFTFuxwOXK3eqew68O6GbJaYTuB/jeUUHRB",
+  secret_key_base: "Z+ItIpNC0br+DpqmEyoXutBvqo+07xHZxTD2fRFaIrgUFWub+6soNozWnL8o9SfS",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:dash, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:dash, ~w(--watch)]}

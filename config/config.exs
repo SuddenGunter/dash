@@ -8,7 +8,6 @@
 import Config
 
 config :dash,
-  ecto_repos: [Dash.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
@@ -20,7 +19,7 @@ config :dash, DashWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Dash.PubSub,
-  live_view: [signing_salt: "5jWON4z3"]
+  live_view: [signing_salt: "GfRgbA/W"]
 
 # Configures the mailer
 #

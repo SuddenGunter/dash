@@ -9,8 +9,10 @@ defmodule Dash.Application do
   def start(_type, _args) do
     children = [
       DashWeb.Telemetry,
-      Dash.Repo,
       {DNSCluster, query: Application.get_env(:dash, :dns_cluster_query) || :ignore},
+      {Registry, [keys: :unique, name: Dash.Timers.Registry]},
+      Dash.Idseq.Idseq,
+      Dash.Timers.Supervisor,
       {Phoenix.PubSub, name: Dash.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Dash.Finch},
