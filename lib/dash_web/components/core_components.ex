@@ -17,7 +17,7 @@ defmodule DashWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import DashWeb.Gettext
+  use Gettext, backend: Dash.Gettext
 
   @doc """
   Renders a modal.
