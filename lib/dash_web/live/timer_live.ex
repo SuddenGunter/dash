@@ -16,7 +16,7 @@ defmodule DashWeb.TimerLive do
 
     if connected?(socket), do: Dash.TimerPubSub.subscribe(timer_id)
 
-    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: time_left(timer))}
+    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
   end
 
   @impl true
@@ -27,15 +27,11 @@ defmodule DashWeb.TimerLive do
 
   @impl true
   def handle_event("stop", _unsigned_params, socket) do
-    timer = Dash.Timers.Timer.get(socket.assigns.id)
-    time_left = time_left(timer)
-
-    # it's ok to do it as separate operation: optimistic lock will prevent concurrent updates
-    Dash.Timers.Timer.stop(socket.assigns.id, time_left)
+    timer = Dash.Timers.Timer.stop(socket.assigns.id)
 
     values = %{
       state: :stopped,
-      time_left: time_left
+      time_left: timer.time_left
     }
 
     # for other users
@@ -64,15 +60,11 @@ defmodule DashWeb.TimerLive do
   @impl true
   def handle_event("timer_live__completed", _params, socket) do
     # TODO: what if client already sent an event, but the timer is not yet expired?
-    timer = Dash.Timers.Timer.get(socket.assigns.id)
-
-    time_left = time_left(timer)
-
-    Dash.Timers.Timer.stop(socket.assigns.id, time_left)
+    timer = Dash.Timers.Timer.stop(socket.assigns.id)
 
     values = %{
       state: :running,
-      time_left: time_left
+      time_left: timer.time_left
     }
 
     {:noreply, assign(socket, values)}
@@ -81,25 +73,5 @@ defmodule DashWeb.TimerLive do
   @impl true
   def handle_info(%{state: state, time_left: time_left}, socket) do
     {:noreply, assign(socket, %{state: state, time_left: time_left})}
-  end
-
-  defp time_left(timer) do
-    case timer.state do
-      :running ->
-        diff =
-          DateTime.diff(DateTime.utc_now(), timer.updated_at, :second)
-
-        Logger.info("timer.updated_at: #{timer.updated_at}")
-        diffTime = Time.from_seconds_after_midnight(diff)
-
-        if Time.compare(diffTime, timer.time_left) == :gt do
-          ~T[00:00:00]
-        else
-          Time.add(timer.time_left, -diff, :second)
-        end
-
-      :stopped ->
-        timer.time_left
-    end
   end
 end
