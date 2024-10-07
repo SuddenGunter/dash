@@ -51,21 +51,4 @@ Hooks.Timer = {
     }
 };
 
-// used in the app.html.heex
-Hooks.NotificationsEnabler = {
-    mounted() {
-        if (this.el !== null) {
-            if (!NotificationsAPI.Enabled() && !NotificationsAPI.Denied()) {
-                this.el.classList.remove("invisible");
-                this.el.classList.add("visible");
-                this.el.addEventListener("click", () => {
-                    this.el.classList.remove("visible");
-                    this.el.classList.add("invisible");
-                    NotificationsAPI.RequestPermission();
-                });
-            }
-        }
-    }
-}
-
 export default Hooks;

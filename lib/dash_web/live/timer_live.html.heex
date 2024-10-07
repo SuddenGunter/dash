@@ -7,7 +7,15 @@
       </p>
 
       <%= if @state == :stopped do %>
-        <.button class="mt-10" phx-click="start">Start</.button>
+        <.button
+          class="mt-10"
+          phx-click={
+            JS.dispatch("dash:notifications__request_permissions")
+            |> JS.push("start")
+          }
+        >
+          Start
+        </.button>
       <% end %>
 
       <%= if @state == :running do %>

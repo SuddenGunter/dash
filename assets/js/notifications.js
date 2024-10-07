@@ -1,11 +1,11 @@
 let NotificationsAPI = {};
 
 NotificationsAPI.RequestPermission = function () {
-    if (Notification.permission === "granted") {
+    if (Notification.permission === "granted" || Notification.permission === "denied") {
         return;
-    } else if (Notification.permission !== "denied") {
-        Notification.requestPermission();
     }
+
+    Notification.requestPermission();
 }
 
 NotificationsAPI.Enabled = function () {
@@ -16,13 +16,6 @@ NotificationsAPI.Enabled = function () {
     return false;
 }
 
-NotificationsAPI.Denied = function () {
-    if (Notification.permission === "denied") {
-        return true;
-    }
-
-    return false;
-}
 
 NotificationsAPI.Send = function (Msg) {
     if (NotificationsAPI.Enabled()) {
