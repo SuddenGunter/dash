@@ -3,6 +3,8 @@ defmodule DashWeb.TimerLive do
   use DashWeb, :live_view
 
   @impl true
+  @spec mount(nil | maybe_improper_list() | map(), any(), Phoenix.LiveView.Socket.t()) ::
+          {:ok, any()}
   def mount(params, _session, socket) do
     timer_id = params["id"]
     timer = Timer.get(timer_id)

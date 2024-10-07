@@ -1,5 +1,8 @@
+import NotificationsAPI from "./notifications";
+
 let Hooks = {};
 
+// used in timer_live.html.heex
 Hooks.Timer = {
     mounted() {
         clearInterval(this.timer);
@@ -25,6 +28,7 @@ Hooks.Timer = {
             if (timeLeft <= 0) {
                 clearInterval(this.timer);
                 this.pushEvent("timer_live__completed", {})
+                NotificationsAPI.Send("⏲️ Timer completed!");
                 return;
             }
             timeLeft -= 1;
