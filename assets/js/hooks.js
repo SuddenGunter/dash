@@ -1,5 +1,8 @@
+import NotificationsAPI from "./notifications";
+
 let Hooks = {};
 
+// used in timer_live.html.heex
 Hooks.Timer = {
     mounted() {
         clearInterval(this.timer);
@@ -25,6 +28,7 @@ Hooks.Timer = {
             if (timeLeft <= 0) {
                 clearInterval(this.timer);
                 this.pushEvent("timer_live__completed", {})
+                NotificationsAPI.Send("⏲️ Timer completed!");
                 return;
             }
             timeLeft -= 1;
@@ -46,5 +50,22 @@ Hooks.Timer = {
             .join(":");
     }
 };
+
+// used in the app.html.heex
+Hooks.NotificationsEnabler = {
+    mounted() {
+        if (this.el !== null) {
+            if (!NotificationsAPI.Enabled() && !NotificationsAPI.Denied()) {
+                this.el.classList.remove("invisible");
+                this.el.classList.add("visible");
+                this.el.addEventListener("click", () => {
+                    this.el.classList.remove("visible");
+                    this.el.classList.add("invisible");
+                    NotificationsAPI.RequestPermission();
+                });
+            }
+        }
+    }
+}
 
 export default Hooks;

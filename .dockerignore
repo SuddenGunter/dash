@@ -44,5 +44,8 @@ erl_crash.dump
 /priv/static/assets/
 /priv/static/cache_manifest.json
 
+# Dev env certs, no need to copy them to the image
+/priv/cert
+
 *prod.yaml
 *prod.yml
