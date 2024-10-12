@@ -2,7 +2,7 @@
   <!-- TODO: split into two different components: timer ongoing / stopped timer -->
   <%= if @time_left != ~T[00:00:00] do %>
     <section class="flex flex-col justify-center items-center">
-      <p class="text-6xl font-extrabold" id="time-left" data-state={@state} phx-hook="Timer">
+      <p class="text-8xl font-extrabold" id="time-left" data-state={@state} phx-hook="Timer">
         <%= @time_left %>
       </p>
 
