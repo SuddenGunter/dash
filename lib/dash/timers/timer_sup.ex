@@ -18,7 +18,7 @@ defmodule Dash.Timers.Supervisor do
     spec = %{
       id: Timer,
       start: {Timer, :start_link, [id, state]},
-      restart: :transient
+      restart: :temporary
     }
 
     case DynamicSupervisor.start_child(__MODULE__, spec) do
