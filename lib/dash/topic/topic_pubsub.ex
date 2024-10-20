@@ -1,4 +1,7 @@
 defmodule Dash.Topic.PubSub do
+  @moduledoc """
+  Convinience functions for subscribing and publishing to MQTT topics.
+  """
   alias Phoenix.PubSub
   require Logger
 

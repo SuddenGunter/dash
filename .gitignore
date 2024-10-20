@@ -39,3 +39,5 @@ docker-compose.prod.yml
 
 # Certs for local testing, can be regenerated with `mix phx.gen.cert`
 /priv/cert
+
+cubdb/

@@ -1,4 +1,9 @@
 defmodule Dash.Topic.Listener do
+  @moduledoc """
+  Listener for MQTT messages. Ignores everything except messages from zigbee2mqtt,
+  which are then published to the appropriate PubSub topic.
+  """
+
   require Logger
   alias Dash.Topic.PubSub
 

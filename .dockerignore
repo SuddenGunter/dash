@@ -49,3 +49,6 @@ erl_crash.dump
 
 *prod.yaml
 *prod.yml
+
+mosquitto/
+cubdb/
