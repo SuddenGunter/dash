@@ -59,7 +59,8 @@ defmodule Dash.MixProject do
       {:sqids, "~> 0.1.3"},
       # linters
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:exmqtt, github: "suddengunter/exmqtt", tag: "0.2.1"}
     ]
   end
 

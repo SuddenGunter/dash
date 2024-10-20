@@ -11,7 +11,7 @@ defmodule DashWeb.TimerLive do
 
     if connected?(socket) do
       Timer.observe(timer_id, self())
-      Dash.TimerPubSub.subscribe(timer_id)
+      Dash.Timers.PubSub.subscribe(timer_id)
     end
 
     {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
@@ -33,7 +33,7 @@ defmodule DashWeb.TimerLive do
     }
 
     # for other users
-    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+    Dash.Timers.PubSub.timer_changed(socket.assigns.id, values)
 
     {:noreply, assign(socket, values)}
   end
@@ -48,7 +48,7 @@ defmodule DashWeb.TimerLive do
     }
 
     # for other users
-    Dash.TimerPubSub.timer_changed(socket.assigns.id, values)
+    Dash.Timers.PubSub.timer_changed(socket.assigns.id, values)
 
     {:noreply, assign(socket, values)}
   end

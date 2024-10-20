@@ -1,4 +1,4 @@
-defmodule Dash.TimerPubSub do
+defmodule Dash.Timers.PubSub do
   @moduledoc """
   PubSub module for timers. Allows multiple users to know if timer was stopped or started.
   """

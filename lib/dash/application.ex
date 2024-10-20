@@ -7,6 +7,8 @@ defmodule Dash.Application do
 
   @impl true
   def start(_type, _args) do
+    mqttconf = Application.get_env(:dash, :mqtt)
+
     children = [
       DashWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dash, :dns_cluster_query) || :ignore},
@@ -14,6 +16,13 @@ defmodule Dash.Application do
       Dash.Idseq.Idseq,
       Dash.Timers.Supervisor,
       {Phoenix.PubSub, name: Dash.PubSub},
+      {ExMQTT.Supervisor,
+       publish_handler: {Dash.Topic.Listener, []},
+       host: mqttconf[:host],
+       port: mqttconf[:port],
+       username: mqttconf[:username],
+       password: mqttconf[:password],
+       subscriptions: mqttconf[:subscriptions]},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Dash.Finch},
       # Start a worker by calling: Dash.Worker.start_link(arg)
