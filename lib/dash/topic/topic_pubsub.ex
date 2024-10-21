@@ -11,6 +11,14 @@ defmodule Dash.Topic.PubSub do
 
   @spec publish(binary(), term()) :: :ok | {:error, any()}
   def publish(device, msg) do
-    PubSub.broadcast(Dash.PubSub, "mqtt/#{device}", msg)
+    try do
+      [{db, _value}] = Registry.lookup(Dash.ProcRegistry, :rootdb)
+      CubDB.put(db, device, msg)
+      PubSub.broadcast(Dash.PubSub, "mqtt/#{device}", msg)
+    rescue
+      error ->
+        Logger.error(error: error)
+        :ok
+    end
   end
 end

@@ -8,11 +8,20 @@ defmodule Dash.Timers.Timer do
 
   def start_link(name, args) do
     GenServer.start_link(__MODULE__, {name, args},
-      name: {:via, Registry, {Dash.Timers.Registry, name}}
+      name: {:via, Registry, {Dash.ProcRegistry, name}}
     )
   end
 
   @impl true
+  @spec init({any(), %{:time_left => any(), optional(any()) => any()}}) ::
+          {:ok,
+           %{
+             :id => any(),
+             :observers => 0,
+             :state => :stopped,
+             :time_left => any(),
+             optional(any()) => any()
+           }}
   def init({
         name,
         state = %{
@@ -26,19 +35,19 @@ defmodule Dash.Timers.Timer do
   end
 
   def stop(id) do
-    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :stop)
+    GenServer.call({:via, Registry, {Dash.ProcRegistry, id}}, :stop)
   end
 
   def run(id) do
-    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :run)
+    GenServer.call({:via, Registry, {Dash.ProcRegistry, id}}, :run)
   end
 
   def observe(id, observer) do
-    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, {:observe, observer})
+    GenServer.call({:via, Registry, {Dash.ProcRegistry, id}}, {:observe, observer})
   end
 
   def get(id) do
-    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :get)
+    GenServer.call({:via, Registry, {Dash.ProcRegistry, id}}, :get)
   end
 
   def handle_call(:get, _from, state) do
