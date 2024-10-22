@@ -15,21 +15,36 @@ defmodule Dash.Application do
       {Registry, [keys: :unique, name: Dash.Timers.Registry]},
       Dash.Idseq.Idseq,
       Dash.Timers.Supervisor,
-      {Phoenix.PubSub, name: Dash.PubSub},
-      {ExMQTT.Supervisor,
-       publish_handler: {Dash.Topic.Listener, []},
-       host: mqttconf[:host],
-       port: mqttconf[:port],
-       username: mqttconf[:username],
-       password: mqttconf[:password],
-       subscriptions: mqttconf[:subscriptions]},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Dash.Finch},
-      # Start a worker by calling: Dash.Worker.start_link(arg)
-      # {Dash.Worker, arg},
-      # Start to serve requests, typically the last entry
-      DashWeb.Endpoint
+      {Phoenix.PubSub, name: Dash.PubSub}
     ]
+
+    children =
+      # poor man's feature flag
+      if mqttconf[:enabled] == true do
+        children ++
+          [
+            {ExMQTT.Supervisor,
+             publish_handler: {Dash.Topic.Listener, []},
+             host: mqttconf[:host],
+             port: mqttconf[:port],
+             username: mqttconf[:username],
+             password: mqttconf[:password],
+             subscriptions: mqttconf[:subscriptions]}
+          ]
+      else
+        children
+      end
+
+    children =
+      children ++
+        [
+          # Start the Finch HTTP client for sending emails
+          {Finch, name: Dash.Finch},
+          # Start a worker by calling: Dash.Worker.start_link(arg)
+          # {Dash.Worker, arg},
+          # Start to serve requests, typically the last entry
+          DashWeb.Endpoint
+        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
