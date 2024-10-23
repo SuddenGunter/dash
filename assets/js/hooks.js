@@ -27,6 +27,16 @@ Hooks.Timer = {
 
         let timeLeftElement = this.el;
 
+        // TODO: better version could be implemented using visibility API
+        // https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event
+        // 1 if tab is active - use setInterval to refresh so that user can actually see timer changes
+        // 2 if the tab is inactive - cancel setInterval,  use setInterval for 1m (Chrome will execute it only once per minute anyway)
+        // or maybe we don't even need it. If it properly throttles it automatically - why should we bother?
+        //  another option
+        // 1 if tab is active - use setInterval to refresh so that user can actually see timer changes
+        // 2 if tab is inactive - disable it (what about tab preview that some users use?)
+        // 3 use setTimeout in serviceWorker to send a notification - it will be reliable
+        // 4 need to check on CSRF /XSRF in service workers
         this.timer = setInterval(() => {
             if (timeLeft <= 0) {
                 clearInterval(this.timer);
