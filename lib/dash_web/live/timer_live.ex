@@ -28,30 +28,25 @@ defmodule DashWeb.TimerLive do
   def handle_event("stop", _unsigned_params, socket) do
     timer = Timer.stop(socket.assigns.id)
 
-    values = %{
-      state: :stopped,
-      time_left: timer.time_left
-    }
-
-    # for other users
-    PubSub.timer_changed(socket.assigns.id, values)
-
-    {:noreply, assign(socket, values)}
+    {:noreply,
+     assign(
+       socket,
+       %{
+         state: :stopped,
+         time_left: timer.time_left
+       }
+     )}
   end
 
   @impl true
   def handle_event("start", _unsigned_params, socket) do
     timer = Timer.run(socket.assigns.id)
 
-    values = %{
-      state: :running,
-      time_left: timer.time_left
-    }
-
-    # for other users
-    PubSub.timer_changed(socket.assigns.id, values)
-
-    {:noreply, assign(socket, values)}
+    {:noreply,
+     assign(socket, %{
+       state: :running,
+       time_left: timer.time_left
+     })}
   end
 
   @impl true

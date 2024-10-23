@@ -5,6 +5,7 @@ defmodule Dash.Timers.Timer do
   """
   require Logger
   use GenServer
+  alias Dash.Timers.PubSub
 
   def start_link(name, args) do
     GenServer.start_link(__MODULE__, {name, args},
@@ -79,6 +80,11 @@ defmodule Dash.Timers.Timer do
         started_at: nil
       })
 
+    PubSub.timer_changed(new_state.id, %{
+      state: :stopped,
+      time_left: tl
+    })
+
     {:reply, new_state, new_state}
   end
 
@@ -97,6 +103,11 @@ defmodule Dash.Timers.Timer do
         state: :running,
         started_at: started_at
       })
+
+    PubSub.timer_changed(new_state.id, %{
+      state: :stopped,
+      time_left: new_state.time_left
+    })
 
     {:reply, new_state, new_state}
   end
