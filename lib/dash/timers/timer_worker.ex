@@ -39,7 +39,11 @@ defmodule Dash.Timers.Timer do
   end
 
   def get(id) do
-    GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :get)
+    # we don't care about safety of other operations, but get is done when page is just loaded - so we want to be sure timer exists
+    case Registry.lookup(Dash.Timers.Registry, id) do
+      [{_, pid}] -> GenServer.call({:via, Registry, {Dash.Timers.Registry, id}}, :get)
+      _ -> {:error, :not_found}
+    end
   end
 
   def handle_call(:get, _from, state) do

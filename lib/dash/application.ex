@@ -18,8 +18,8 @@ defmodule Dash.Application do
       {Phoenix.PubSub, name: Dash.PubSub}
     ]
 
+    # poor man's feature flag
     children =
-      # poor man's feature flag
       if mqttconf[:enabled] == true do
         children ++
           [

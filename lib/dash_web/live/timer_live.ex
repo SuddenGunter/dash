@@ -1,4 +1,5 @@
 defmodule DashWeb.TimerLive do
+  require Logger
   alias Dash.Timers.PubSub
   alias Dash.Timers.Timer
   use DashWeb, :live_view
@@ -8,14 +9,33 @@ defmodule DashWeb.TimerLive do
           {:ok, any()}
   def mount(params, _session, socket) do
     timer_id = params["id"]
-    timer = Timer.get(timer_id)
 
-    if connected?(socket) do
-      Timer.observe(timer_id, self())
-      PubSub.subscribe(timer_id)
+    case Timer.get(timer_id) do
+      {:error, :not_found} ->
+        {:ok,
+         socket
+         |> put_flash(:error, "Timer not found: it may have expired or been deleted.")
+         |> redirect(to: ~p"/")}
+
+      {:error, err} ->
+        Logger.error("Error getting timer: #{inspect(err)}, timer_id: #{timer_id}")
+
+        {:ok,
+         socket
+         |> put_flash(
+           :error,
+           "Unknown error, provider #{timer_id} to developer so we could fix it."
+         )
+         |> redirect(to: ~p"/")}
+
+      timer ->
+        if connected?(socket) do
+          Timer.observe(timer_id, self())
+          PubSub.subscribe(timer_id)
+        end
+
+        {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
     end
-
-    {:ok, socket |> assign(id: timer_id, state: timer.state, time_left: timer.time_left)}
   end
 
   @impl true
