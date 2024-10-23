@@ -91,4 +91,4 @@ config :dash, :mqtt,
   username: "mqttliveview",
   password: "mqttliveview",
   subscriptions: [{"zigbee2mqtt/Balcony", 1}],
-  enabled: true
+  enabled: false

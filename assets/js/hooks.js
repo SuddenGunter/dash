@@ -20,8 +20,11 @@ Hooks.Timer = {
         }
     },
 
-    startTimer(initialTime) {
-        let timeLeft = initialTime;
+    startTimer(initialTimeLeft) {
+        let startTime = Date.now();
+        let endTime = startTime + initialTimeLeft * 1000;
+        let timeLeft = Math.round((endTime - startTime) / 1000);
+
         let timeLeftElement = this.el;
 
         this.timer = setInterval(() => {
@@ -31,15 +34,9 @@ Hooks.Timer = {
                 NotificationsAPI.Send("⏲️ Timer completed!");
                 return;
             }
-            // TODO: not sure how, but there is an edge case in here where time drift might occure on different clients.
-            // Need to replace this with logic of calculating diff between current and expected end time, expected
-            // and time should be calculated as current time + time left at the monent of starting the timer (should be done on client side, cause
-            // time of day clock diff between server and client).
-            // potential root cause:
-            // https://stackoverflow.com/questions/6032429/chrome-timeouts-interval-suspended-in-background-tabs
-            // another overkill solution:
-            // https://samrat.me/til-using-web-workers-with-phoenix-liveview/
-            timeLeft -= 1;
+
+            timeLeft = Math.round((endTime - Date.now()) / 1000);
+            console.log(new Date());
             timeLeftElement.innerText = this.formatTime(timeLeft);
         }, 1000);
     },
