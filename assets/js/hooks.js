@@ -36,7 +36,6 @@ Hooks.Timer = {
             }
 
             timeLeft = Math.round((endTime - Date.now()) / 1000);
-            console.log(new Date());
             timeLeftElement.innerText = this.formatTime(timeLeft);
         }, 1000);
     },
