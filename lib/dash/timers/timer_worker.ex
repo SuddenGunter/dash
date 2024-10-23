@@ -105,7 +105,7 @@ defmodule Dash.Timers.Timer do
       })
 
     PubSub.timer_changed(new_state.id, %{
-      state: :stopped,
+      state: :running,
       time_left: new_state.time_left
     })
 

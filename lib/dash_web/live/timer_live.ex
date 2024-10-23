@@ -28,6 +28,7 @@ defmodule DashWeb.TimerLive do
   def handle_event("stop", _unsigned_params, socket) do
     timer = Timer.stop(socket.assigns.id)
 
+    # we return updated state ASAP, even though technically it might be also updated by handle_info callback
     {:noreply,
      assign(
        socket,
@@ -42,6 +43,7 @@ defmodule DashWeb.TimerLive do
   def handle_event("start", _unsigned_params, socket) do
     timer = Timer.run(socket.assigns.id)
 
+    # we return updated state ASAP, even though technically it might be also updated by handle_info callback
     {:noreply,
      assign(socket, %{
        state: :running,
