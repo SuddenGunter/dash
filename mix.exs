@@ -80,6 +80,11 @@ defmodule Dash.MixProject do
         "tailwind dash --minify",
         "esbuild dash --minify",
         "phx.digest"
+      ],
+      lint: [
+        "compile --warnings-as-errors",
+        "sobelow -i Config.HTTPS,Config.CSP",
+        "credo --strict"
       ]
     ]
   end
