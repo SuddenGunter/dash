@@ -11,15 +11,16 @@
     </div>
   </div>
   <div class="border-2 p-4 flex flex-col justify-center items-center">
-    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
+    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Home security</h1>
     <div>
       <.simple_form for={@security_form} action={~p"/security_state"}>
+        <!-- TODO: should be checkbox, but will not work cause it's not liveview-->
         <%= if @security_form.source["enabled"] do %>
-          <.button name="change_security_state">
+          <.button class="bg-red-500" name="change_security_state">
             Disable
           </.button>
         <% else %>
-          <.button name="change_security_state">
+          <.button class="bg-live-600" name="change_security_state">
             Enable
           </.button>
         <% end %>
