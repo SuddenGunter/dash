@@ -3,7 +3,10 @@ defmodule DashWeb.HomeController do
   require Logger
 
   def home(conn, _params) do
-    render(conn, :home, form: Phoenix.Component.to_form(%{}))
+    render(conn, :home,
+      form: Phoenix.Component.to_form(%{}),
+      security_form: Phoenix.Component.to_form(%{"enabled" => false})
+    )
   end
 
   @spec timer(Plug.Conn.t(), map()) :: Plug.Conn.t()
@@ -24,5 +27,14 @@ defmodule DashWeb.HomeController do
 
     Plug.Conn.put_status(conn, 303)
     redirect(conn, to: ~p"/timer/#{timer.id}")
+  end
+
+  def security_state(conn, _params) do
+    referer = List.first(Plug.Conn.get_req_header(conn, "referer")) || "/"
+    path = URI.parse(referer).path || "/"
+
+    conn
+    |> put_flash(:info, "Let's pretend we have an error.")
+    |> redirect(to: path)
   end
 end
