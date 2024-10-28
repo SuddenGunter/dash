@@ -13,9 +13,11 @@ defmodule Dash.Application do
       DashWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dash, :dns_cluster_query) || :ignore},
       {Registry, [keys: :unique, name: Dash.Timers.Registry]},
+      {Registry, [keys: :unique, name: Dash.CommonRegistry]},
       Dash.Idseq.Idseq,
       Dash.Timers.Supervisor,
-      {Phoenix.PubSub, name: Dash.PubSub}
+      {Phoenix.PubSub, name: Dash.PubSub},
+      {Dash.Security.Server, enabled: true}
     ]
 
     # poor man's feature flag

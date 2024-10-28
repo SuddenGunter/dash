@@ -9,7 +9,7 @@ defmodule DashWeb.HomeLive do
        timer_form: Phoenix.Component.to_form(%{}),
        security_form:
          Phoenix.Component.to_form(%{
-           "enabled" => false
+           "enabled" => Dash.Security.Server.enabled?()
          })
      )}
   end
@@ -39,6 +39,8 @@ defmodule DashWeb.HomeLive do
         %{"_target" => ["security_enabled"], "security_enabled" => "true"},
         socket
       ) do
+    Dash.Security.Server.enable()
+
     {:noreply,
      assign(socket,
        security_form:
@@ -54,6 +56,8 @@ defmodule DashWeb.HomeLive do
         %{"_target" => ["security_enabled"], "security_enabled" => "false"},
         socket
       ) do
+    Dash.Security.Server.disable()
+
     {:noreply,
      assign(socket,
        security_form:
