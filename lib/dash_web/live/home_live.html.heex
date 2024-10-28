@@ -1,0 +1,26 @@
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-1">
+  <div class="border-2 p-4 flex flex-col justify-center items-center">
+    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
+    <div>
+      <.simple_form for={@timer_form} phx-submit="submit_timer">
+        <.button name="duration" value="30">00:30:00</.button>
+        <.button name="duration" value="60">01:00:00</.button>
+        <.button name="duration" value="120">02:00:00</.button>
+        <.button name="duration" value="180">03:00:00</.button>
+      </.simple_form>
+    </div>
+  </div>
+  <div class="border-2 p-4 flex flex-col justify-center items-center">
+    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Home security</h1>
+    <.simple_form for={@security_form} phx-change="security_toggle">
+      <div>
+        <.input
+          type="checkbox"
+          name="security_enabled"
+          checked={@security_form.source["enabled"]}
+          label="Enable alert"
+        />
+      </div>
+    </.simple_form>
+  </div>
+</div>
