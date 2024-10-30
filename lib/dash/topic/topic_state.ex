@@ -1,4 +1,7 @@
 defmodule Dash.Topic.State do
+  @moduledoc """
+  Simple in-memory state impl that stores all messages received from all topics. Mostly used for testing
+  """
   use Agent
 
   @proc {:via, Registry, {Dash.CommonRegistry, __MODULE__}}
