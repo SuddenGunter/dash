@@ -1,6 +1,7 @@
 defmodule DashWeb.HomeLive do
   require Logger
   use DashWeb, :live_view
+  alias Dash.Security.Server, as: SecServ
 
   @impl true
   def mount(_params, _session, socket) do
@@ -9,7 +10,7 @@ defmodule DashWeb.HomeLive do
        timer_form: Phoenix.Component.to_form(%{}),
        security_form:
          Phoenix.Component.to_form(%{
-           "enabled" => Dash.Security.Server.enabled?()
+           "enabled" => SecServ.enabled?()
          })
      )}
   end
@@ -39,7 +40,7 @@ defmodule DashWeb.HomeLive do
         %{"_target" => ["security_enabled"], "security_enabled" => "true"},
         socket
       ) do
-    Dash.Security.Server.enable()
+    SecServ.enable()
 
     {:noreply,
      assign(socket,
@@ -56,7 +57,7 @@ defmodule DashWeb.HomeLive do
         %{"_target" => ["security_enabled"], "security_enabled" => "false"},
         socket
       ) do
-    Dash.Security.Server.disable()
+    SecServ.disable()
 
     {:noreply,
      assign(socket,
