@@ -16,6 +16,7 @@ defmodule Dash.Application do
       {Registry, [keys: :unique, name: Dash.CommonRegistry]},
       Dash.Idseq.Idseq,
       Dash.Timers.Supervisor,
+      Dash.Topic.State,
       {Phoenix.PubSub, name: Dash.PubSub},
       {Dash.Security.Server, enabled: true}
     ]

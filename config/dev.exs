@@ -90,5 +90,7 @@ config :dash, :mqtt,
   port: 1883,
   username: "mqttliveview",
   password: "mqttliveview",
-  subscriptions: [{"zigbee2mqtt/Balcony", 1}],
+  subscriptions: [
+    {"zigbee2mqtt/#", 1}
+  ],
   enabled: false
