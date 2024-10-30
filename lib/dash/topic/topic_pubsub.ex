@@ -8,12 +8,12 @@ defmodule Dash.Topic.PubSub do
   require Logger
 
   def subscribe(device) do
-    PubSub.subscribe(Dash.PubSub, "mqtt/#{device}")
+    PubSub.subscribe(Dash.PubSub, "mqtt:#{device}")
   end
 
   @spec publish(binary(), term()) :: :ok | {:error, any()}
   def publish(device, msg) do
     State.save(device, msg)
-    PubSub.broadcast(Dash.PubSub, "mqtt/#{device}", msg)
+    PubSub.broadcast(Dash.PubSub, "mqtt:#{device}", msg)
   end
 end
