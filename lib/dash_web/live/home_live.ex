@@ -30,7 +30,7 @@ defmodule DashWeb.HomeLive do
         time_left: Time.from_seconds_after_midnight(duration * 60)
       })
 
-    {:ok, push_navigate(socket, to: ~p"/timer/#{timer.id}")}
+    {:noreply, push_navigate(socket, to: ~p"/timer/#{timer.id}")}
   end
 
   @impl true

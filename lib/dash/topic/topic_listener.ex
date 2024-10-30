@@ -10,16 +10,25 @@ defmodule Dash.Topic.Listener do
   @behaviour ExMQTT.PublishHandler
 
   @impl true
+  def handle_publish(%{payload: _payload, topic: "zigbee2mqtt/bridge/" <> topic}, _extra) do
+    Logger.debug("Received message on bridge topic, ignoring", topic: topic)
+    :ok
+  end
+
+  @impl true
   def handle_publish(%{payload: payload, topic: "zigbee2mqtt/" <> topic}, _extra) do
     log_topic = "zigbee2mqtt/#{topic}"
+    logctx = [topic: log_topic]
 
-    if valid_device_name(topic) do
-      case Jason.decode(payload) do
-        {:ok, msg} -> PubSub.publish(String.downcase(topic), msg)
-        {:error, _} -> Logger.error("Invalid JSON payloadd, ignoring", topic: log_topic)
-      end
-    else
-      Logger.error("Invalid device name, ignoring", topic: log_topic)
+    case String.split(topic, "/") do
+      [device, "availability"] ->
+        handle_availability_msg(String.downcase(device), payload, logctx)
+
+      [device] ->
+        handle_device_msg(String.downcase(device), payload, logctx)
+
+      _ ->
+        Logger.error("Invalid topic name, ignoring", logctx)
     end
 
     :ok
@@ -31,7 +40,29 @@ defmodule Dash.Topic.Listener do
     :ok
   end
 
-  defp valid_device_name(device) do
-    String.contains?(device, "/") == false
+  defp handle_device_msg(device, msg, logctx) do
+    case Jason.decode(msg) do
+      {:ok, msg} -> PubSub.publish(String.downcase(device), msg)
+      {:error, _} -> Logger.error("Invalid JSON payload, ignoring", logctx)
+    end
+  end
+
+  defp handle_availability_msg(device, msg, logctx) do
+    case msg do
+      "online" ->
+        PubSub.publish(String.downcase(device), %{
+          available: true,
+          received: Time.utc_now()
+        })
+
+      "offline" ->
+        PubSub.publish(String.downcase(device), %{
+          available: false,
+          received: Time.utc_now()
+        })
+
+      _ ->
+        Logger.error("can't process unknown availability message: #{msg}", logctx)
+    end
   end
 end

@@ -11,6 +11,7 @@ defmodule Dash.Topic.PubSub do
 
   @spec publish(binary(), term()) :: :ok | {:error, any()}
   def publish(device, msg) do
+    Dash.Topic.State.save(device, msg)
     PubSub.broadcast(Dash.PubSub, "mqtt/#{device}", msg)
   end
 end
