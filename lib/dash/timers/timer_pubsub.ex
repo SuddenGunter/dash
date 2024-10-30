@@ -9,10 +9,10 @@ defmodule Dash.Timers.PubSub do
   end
 
   def subscribe(timer_id) do
-    PubSub.subscribe(Dash.PubSub, "timer/#{timer_id}")
+    PubSub.subscribe(Dash.PubSub, "timer:#{timer_id}")
   end
 
   defp notify(timer_id, msg) do
-    PubSub.broadcast(Dash.PubSub, "timer/#{timer_id}", msg)
+    PubSub.broadcast(Dash.PubSub, "timer:#{timer_id}", msg)
   end
 end

@@ -11,7 +11,7 @@ defmodule Dash.Topic.Listener do
 
   @impl true
   def handle_publish(%{payload: _payload, topic: "zigbee2mqtt/bridge/" <> topic}, _extra) do
-    Logger.debug("Received message on bridge topic, ignoring", topic: topic)
+    Logger.warning("Received message on bridge topic, ignoring", topic: topic)
     :ok
   end
 
@@ -36,14 +36,28 @@ defmodule Dash.Topic.Listener do
 
   @impl true
   def handle_publish(%{payload: _payload, topic: topic}, _extra) do
-    Logger.debug("Received message on topic, ignoring", topic: topic)
+    Logger.warning("Received message on topic, ignoring", topic: topic)
     :ok
   end
 
   defp handle_device_msg(device, msg, logctx) do
     case Jason.decode(msg) do
-      {:ok, msg} -> PubSub.publish(String.downcase(device), msg)
-      {:error, _} -> Logger.error("Invalid JSON payload, ignoring", logctx)
+      {:ok,
+       %{
+         "battery" => battery,
+         "contact" => contact
+       }} ->
+        PubSub.publish(String.downcase(device), %{
+          battery: battery,
+          contact: contact,
+          received: Time.utc_now()
+        })
+
+      {:ok, _msg} ->
+        Logger.error("Unsupported message format", logctx)
+
+      {:error, _} ->
+        Logger.error("Invalid JSON payload, ignoring", logctx)
     end
   end
 
