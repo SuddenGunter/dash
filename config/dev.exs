@@ -62,9 +62,7 @@ config :dash, DashWeb.Endpoint,
 config :dash, dev_routes: true
 
 # Do not include timestamps in development logs
-config :logger, :console,
-  format: "[$level] $metadata $message\n",
-  metadata: [:topic]
+config :logger, :console, format: "[$level] $metadata $message\n"
 
 Logger.put_module_level(ExMQTT, :info)
 Logger.put_module_level(:emqtt, :info)
