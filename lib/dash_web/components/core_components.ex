@@ -626,9 +626,9 @@ defmodule DashWeb.CoreComponents do
     js
     |> JS.show(to: "##{id}")
     |> JS.show(
-      to: "##{id}-bg",
-      time: 300,
-      transition: {"transition-all transform ease-out duration-300", "opacity-0", "opacity-100"}
+      to: "##{id}-bg"
+      # time: 300,
+      # transition: {"transition-all transform ease-out duration-300", "opacity-0", "opacity-100"}
     )
     |> show("##{id}-container")
     |> JS.add_class("overflow-hidden", to: "body")
@@ -638,8 +638,8 @@ defmodule DashWeb.CoreComponents do
   def hide_modal(js \\ %JS{}, id) do
     js
     |> JS.hide(
-      to: "##{id}-bg",
-      transition: {"transition-all transform ease-in duration-200", "opacity-100", "opacity-0"}
+      to: "##{id}-bg"
+      # transition: {"transition-all transform ease-in duration-200", "opacity-100", "opacity-0"}
     )
     |> hide("##{id}-container")
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})

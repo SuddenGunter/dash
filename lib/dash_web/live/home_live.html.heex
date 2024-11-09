@@ -1,27 +1,34 @@
-<div class="grid grid-cols-1 xl:grid-cols-2 gap-1">
-  <div class="border-2 p-4 flex flex-col justify-center items-center">
-    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
-    <div>
-      <.simple_form for={@timer_form} phx-submit="submit_timer">
-        <.button name="duration" value="30">00:30:00</.button>
-        <.button name="duration" value="60">01:00:00</.button>
-        <.button name="duration" value="120">02:00:00</.button>
-        <.button name="duration" value="180">03:00:00</.button>
+<div class="border-2 p-4 flex flex-col justify-center items-center">
+  <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
+  <div>
+    <.modal id="change_timer_durations">
+      <.simple_form
+        for={@timer_settings_form}
+        phx-submit={
+          DashWeb.CoreComponents.hide_modal("change_timer_durations")
+          |> JS.push("submit_timer_settings")
+        }
+      >
+        <%= for {{x, name}, i} <- @timers |> Enum.with_index(1) do %>
+          <.input type="number" min="5" max="420" value={x} name={name} label={"Timer #{i}"} />
+        <% end %>
+        <.button name="submit">
+          Save
+        </.button>
       </.simple_form>
-    </div>
-  </div>
-  <div class="border-2 p-4 flex flex-col justify-center items-center">
-    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Home security</h1>
-    <.simple_form for={@security_form} phx-change="security_toggle">
-      <div>
-        <.input
-          type="checkbox"
-          name="security_enabled"
-          checked={@security_form.source["enabled"]}
-          label="Enable alert"
-        />
-      </div>
-      <!-- TODO: link to security details page. It should show: when each door was last opened, when each door state was last updated, battery levels -->
+    </.modal>
+
+    <.simple_form for={@timer_form} phx-submit="submit_timer">
+      <%= for {x, name} <- @timers do %>
+        <.button name="duration" value={x}><%= name %></.button>
+      <% end %>
+      <.button
+        name="settings"
+        type="button"
+        phx-click={DashWeb.CoreComponents.show_modal("change_timer_durations")}
+      >
+        <.icon name="hero-cog-6-tooth" />
+      </.button>
     </.simple_form>
   </div>
 </div>

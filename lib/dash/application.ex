@@ -18,7 +18,8 @@ defmodule Dash.Application do
       Dash.Timers.Supervisor,
       Dash.Topic.State,
       {Phoenix.PubSub, name: Dash.PubSub},
-      {Dash.Security.Server, enabled: true}
+      {Dash.Security.Server, enabled: true},
+      {Dash.Timers.PredefinedTimers, initial_value: [30, 60, 120]}
     ]
 
     # poor man's feature flag
