@@ -1,18 +1,21 @@
 defmodule DashWeb.HomeLive do
   require Logger
   use DashWeb, :live_view
-  alias Dash.Security.Server, as: SecServ
 
   @impl true
   def mount(_params, _session, socket) do
+    timers = Dash.Timers.PredefinedTimers.get()
+
     {:ok,
      assign(socket,
        timer_form: Phoenix.Component.to_form(%{}),
-       security_form:
-         Phoenix.Component.to_form(%{
-           "enabled" => SecServ.enabled?()
-         })
+       timer_settings_form: Phoenix.Component.to_form(%{}),
+       timers: Enum.map(timers, &format_timer/1)
      )}
+  end
+
+  defp format_timer(minutes) when is_number(minutes) do
+    {minutes, Time.from_seconds_after_midnight(60 * minutes) |> Time.to_string()}
   end
 
   @impl true
@@ -35,36 +38,15 @@ defmodule DashWeb.HomeLive do
   end
 
   @impl true
-  def handle_event(
-        "security_toggle",
-        %{"_target" => ["security_enabled"], "security_enabled" => "true"},
-        socket
-      ) do
-    SecServ.enable()
+  def handle_event("submit_timer_settings", values, socket) do
+    timers =
+      Map.values(values)
+      |> Enum.map(fn x ->
+        {num, _rem} = Integer.parse(x)
+        num
+      end)
 
-    {:noreply,
-     assign(socket,
-       security_form:
-         Phoenix.Component.to_form(%{
-           "enabled" => true
-         })
-     )}
-  end
-
-  @impl true
-  def handle_event(
-        "security_toggle",
-        %{"_target" => ["security_enabled"], "security_enabled" => "false"},
-        socket
-      ) do
-    SecServ.disable()
-
-    {:noreply,
-     assign(socket,
-       security_form:
-         Phoenix.Component.to_form(%{
-           "enabled" => false
-         })
-     )}
+    Dash.Timers.PredefinedTimers.set(timers)
+    {:noreply, assign(socket, timers: Enum.sort(timers) |> Enum.map(&format_timer/1))}
   end
 end
