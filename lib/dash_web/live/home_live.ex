@@ -1,10 +1,11 @@
 defmodule DashWeb.HomeLive do
   require Logger
+  alias Dash.Timers.PredefinedTimers
   use DashWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    timers = Dash.Timers.PredefinedTimers.get()
+    timers = PredefinedTimers.get()
 
     {:ok,
      assign(socket,
@@ -46,7 +47,7 @@ defmodule DashWeb.HomeLive do
         num
       end)
 
-    Dash.Timers.PredefinedTimers.set(timers)
+    PredefinedTimers.set(timers)
     {:noreply, assign(socket, timers: Enum.sort(timers) |> Enum.map(&format_timer/1))}
   end
 end

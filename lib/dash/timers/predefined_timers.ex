@@ -1,4 +1,8 @@
 defmodule Dash.Timers.PredefinedTimers do
+  @moduledoc """
+  Storage of predefined timer values. Simple in-memory implementation.
+  """
+
   use Agent
 
   def start_link(opts) do
