@@ -19,7 +19,9 @@ NotificationsAPI.Enabled = function () {
 
 NotificationsAPI.Send = function (Msg) {
     if (NotificationsAPI.Enabled()) {
-        const notification = new Notification(Msg);
+        const notification = new Notification(Msg, {
+            requireInteraction: true
+        });
     }
 }
 
