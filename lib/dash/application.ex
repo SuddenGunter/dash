@@ -7,48 +7,21 @@ defmodule Dash.Application do
 
   @impl true
   def start(_type, _args) do
-    mqttconf = Application.get_env(:dash, :mqtt)
-
     children = [
       DashWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:dash, :dns_cluster_query) || :ignore},
       {Registry, [keys: :unique, name: Dash.Timers.Registry]},
-      {Registry, [keys: :unique, name: Dash.CommonRegistry]},
       Dash.Idseq.Idseq,
       Dash.Timers.Supervisor,
-      Dash.Topic.State,
       {Phoenix.PubSub, name: Dash.PubSub},
-      {Dash.Security.Server, enabled: true},
-      {Dash.Timers.PredefinedTimers, initial_value: [30, 60, 120]}
+      {Dash.Timers.PredefinedTimers, initial_value: [30, 60, 120]},
+      # Start the Finch HTTP client for sending emails
+      {Finch, name: Dash.Finch},
+      # Start a worker by calling: Dash.Worker.start_link(arg)
+      # {Dash.Worker, arg},
+      # Start to serve requests, typically the last entry
+      DashWeb.Endpoint
     ]
-
-    # poor man's feature flag
-    children =
-      if mqttconf[:enabled] == true do
-        children ++
-          [
-            {ExMQTT.Supervisor,
-             publish_handler: {Dash.Topic.Listener, []},
-             host: mqttconf[:host],
-             port: mqttconf[:port],
-             username: mqttconf[:username],
-             password: mqttconf[:password],
-             subscriptions: mqttconf[:subscriptions]}
-          ]
-      else
-        children
-      end
-
-    children =
-      children ++
-        [
-          # Start the Finch HTTP client for sending emails
-          {Finch, name: Dash.Finch},
-          # Start a worker by calling: Dash.Worker.start_link(arg)
-          # {Dash.Worker, arg},
-          # Start to serve requests, typically the last entry
-          DashWeb.Endpoint
-        ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -57,8 +57,6 @@ defmodule Dash.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:sqids, "~> 0.1.3"},
-      {:exmqtt, github: "suddengunter/exmqtt", tag: "0.2.1"},
-      {:cubdb, "~> 2.0"},
       # linters
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}

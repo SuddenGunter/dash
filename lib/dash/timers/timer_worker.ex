@@ -40,7 +40,7 @@ defmodule Dash.Timers.Timer do
 
   def get(id) do
     # we don't care about safety of other operations, but get is done when page is just loaded
-    # so we want to be sure timer акции, exists
+    # so we want to be sure timer exists
     case Registry.lookup(Dash.Timers.Registry, id) do
       # technically it's not atomic and can be deleted between lookup and call, but it's good enough for our use case
       [{pid, _value}] -> GenServer.call(pid, :get)

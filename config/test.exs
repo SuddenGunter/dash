@@ -23,10 +23,3 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
-
-config :dash, :mqtt,
-  host: "localhost",
-  port: 1883,
-  username: "mqttliveview",
-  password: "mqttliveview",
-  subscriptions: []
