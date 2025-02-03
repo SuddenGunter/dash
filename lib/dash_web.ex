@@ -17,7 +17,7 @@ defmodule DashWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images  favicon.svg favicon.ico site.webmanifest favicon-48x48.png apple-touch-icon.png web-app-manifest-192x192.png web-app-manifest-512x512.png robots.txt)
 
   def router do
     quote do
