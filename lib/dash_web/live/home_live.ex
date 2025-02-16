@@ -42,6 +42,7 @@ defmodule DashWeb.HomeLive do
   def handle_event("submit_timer_settings", values, socket) do
     timers =
       Map.values(values)
+      |> Enum.filter(&(&1 != ""))
       |> Enum.map(fn x ->
         {num, _rem} = Integer.parse(x)
         num

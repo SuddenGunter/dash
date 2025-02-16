@@ -20,7 +20,7 @@
 
     <.simple_form for={@timer_form} phx-submit="submit_timer">
       <%= for {x, name} <- @timers do %>
-        <.button name="duration" value={x}><%= name %></.button>
+        <.button name="duration" value={x}>{name}</.button>
       <% end %>
       <.button
         name="settings"
