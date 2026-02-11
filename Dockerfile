@@ -20,6 +20,9 @@ ARG RUNNER_IMAGE="docker.io/debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} AS builder
 
+# Fix JIT issues under QEMU
+ENV ERL_FLAGS="+JMsingle true"
+
 # install build dependencies
 RUN apt-get update \
   && apt-get install -y --no-install-recommends build-essential git \
@@ -69,9 +72,6 @@ RUN mix release
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE} AS final
-
-# Fix JIT issues under QEMU
-ENV ERL_FLAGS="+JMsingle true"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends libstdc++6 openssl libncurses6 locales ca-certificates \
