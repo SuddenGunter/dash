@@ -41,12 +41,14 @@ Hooks.Timer = {
             if (timeLeft <= 0) {
                 clearInterval(this.timer);
                 this.pushEvent("timer_live__completed", {})
+                document.title = "Timer completed!";
                 NotificationsAPI.Send("⏲️ Timer completed!");
                 return;
             }
 
             timeLeft = Math.round((endTime - Date.now()) / 1000);
             timeLeftElement.innerText = this.formatTime(timeLeft);
+            document.title = `${this.formatTime(timeLeft)}`;
         }, 1000);
     },
 
