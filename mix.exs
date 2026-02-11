@@ -32,14 +32,14 @@ defmodule Dash.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.19"},
-      {:phoenix_html, "~> 4.2"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.0.4", override: true},
-      {:floki, ">= 0.37.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.8.6"},
-      {:esbuild, "~> 0.9", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
+      {:phoenix, "~> 1.8"},
+      {:phoenix_html, "~> 4.3"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.1", override: true},
+      {:floki, "~> 0.38", only: :test},
+      {:phoenix_live_dashboard, "~> 0.8"},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.4", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -47,17 +47,17 @@ defmodule Dash.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:swoosh, "~> 1.17.9"},
-      {:finch, "~> 0.19"},
+      {:swoosh, "~> 1.21"},
+      {:finch, "~> 0.21"},
       {:telemetry_metrics, "~> 1.1"},
-      {:telemetry_poller, "~> 1.1"},
-      {:gettext, "~> 0.26"},
+      {:telemetry_poller, "~> 1.3"},
+      {:gettext, "~> 1.0"},
       {:jason, "~> 1.4"},
-      {:dns_cluster, "~> 0.1.3"},
-      {:bandit, "~> 1.6"},
+      {:dns_cluster, "~> 0.2"},
+      {:bandit, "~> 1.10"},
       {:sqids, "~> 0.2.0"},
       # linters
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end

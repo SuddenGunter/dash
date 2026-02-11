@@ -17,13 +17,8 @@ defmodule DashWeb.Router do
   scope "/", DashWeb do
     pipe_through :browser
 
-    # get "/", HomeController, :home
-    # post "/timer", HomeController, :timer
-    # post "/security_state", HomeController, :security_state
-
     live "/", HomeLive, :index
     live "/timer/:id", TimerLive, :timer_live
-    live "/security", SecurityLive, :security_live
   end
 
   # Other scopes may use custom stacks.
