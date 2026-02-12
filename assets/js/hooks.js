@@ -20,6 +20,11 @@ Hooks.Timer = {
         }
     },
 
+    destroyed() {
+        clearInterval(this.timer);
+        document.title = "Dash";
+    },
+
     startTimer(initialTimeLeft) {
         let startTime = Date.now();
         let endTime = startTime + initialTimeLeft * 1000;
@@ -47,8 +52,8 @@ Hooks.Timer = {
             }
 
             timeLeft = Math.round((endTime - Date.now()) / 1000);
-            timeLeftElement.innerText = this.formatTime(timeLeft);
-            document.title = `${this.formatTime(timeLeft)}`;
+            timeLeftElement.innerText = this.formatTimeHHMMSS(timeLeft);
+            document.title = `${this.formatTimeMMSS(timeLeft)}`;
         }, 1000);
     },
 
@@ -57,11 +62,19 @@ Hooks.Timer = {
         return hours * 3600 + minutes * 60 + seconds;
     },
 
-    formatTime(totalSeconds) {
+    formatTimeHHMMSS(totalSeconds) {
         let hours = Math.floor(totalSeconds / 3600);
         let minutes = Math.floor((totalSeconds % 3600) / 60);
         let seconds = totalSeconds % 60;
         return [hours, minutes, seconds]
+            .map(unit => String(unit).padStart(2, "0"))
+            .join(":");
+    },
+
+    formatTimeMMSS(totalSeconds) {
+        let minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+        return [minutes, seconds]
             .map(unit => String(unit).padStart(2, "0"))
             .join(":");
     }
