@@ -1,34 +1,37 @@
-<div class="border-2 p-4 flex flex-col justify-center items-center">
-  <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
-  <div>
-    <.modal id="change_timer_durations">
-      <.simple_form
-        for={@timer_settings_form}
-        phx-submit={
-          DashWeb.CoreComponents.hide_modal("change_timer_durations")
-          |> JS.push("submit_timer_settings")
-        }
-      >
-        <%= for {{x, name}, i} <- @timers |> Enum.with_index(1) do %>
-          <.input type="number" min="5" max="420" value={x} name={name} label={"Timer #{i}"} />
-        <% end %>
-        <.button name="submit">
-          Save
-        </.button>
-      </.simple_form>
-    </.modal>
+<Layouts.app flash={@flash}>
+  <div class="border-2 border-base-300 p-4 flex flex-col justify-center items-center">
+    <h1 class="md:text-4xl 2xl:text-6xl font-extrabold">Select timer duration</h1>
+    <div>
+      <.modal id="change_timer_durations">
+        <.form
+          for={@timer_settings_form}
+          class="mt-4 space-y-4"
+          phx-submit={
+            hide_modal("change_timer_durations")
+            |> JS.push("submit_timer_settings")
+          }
+        >
+          <%= for {{x, name}, i} <- @timers |> Enum.with_index(1) do %>
+            <.input type="number" min="5" max="420" value={x} name={name} label={"Timer #{i}"} />
+          <% end %>
+          <.button name="submit">
+            Save
+          </.button>
+        </.form>
+      </.modal>
 
-    <.simple_form for={@timer_form} phx-submit="submit_timer">
-      <%= for {x, name} <- @timers do %>
-        <.button name="duration" value={x}>{name}</.button>
-      <% end %>
-      <.button
-        name="settings"
-        type="button"
-        phx-click={DashWeb.CoreComponents.show_modal("change_timer_durations")}
+      <.form
+        for={@timer_form}
+        class="mt-10 flex flex-wrap items-center gap-2"
+        phx-submit="submit_timer"
       >
-        <.icon name="hero-cog-6-tooth" />
-      </.button>
-    </.simple_form>
+        <%= for {x, name} <- @timers do %>
+          <.button name="duration" value={x}>{name}</.button>
+        <% end %>
+        <.button name="settings" type="button" phx-click={show_modal("change_timer_durations")}>
+          <.icon name="hero-cog-6-tooth" />
+        </.button>
+      </.form>
+    </div>
   </div>
-</div>
+</Layouts.app>

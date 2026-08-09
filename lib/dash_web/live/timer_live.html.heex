@@ -1,4 +1,4 @@
-<div>
+<Layouts.app flash={@flash}>
   <!-- TODO: split into two different components: timer ongoing / stopped timer -->
   <%= if @time_left != ~T[00:00:00] do %>
     <section class="flex flex-col justify-center items-center">
@@ -8,7 +8,7 @@
 
       <%= if @state == :stopped do %>
         <.button
-          class="mt-10"
+          class="btn btn-primary mt-10"
           phx-click={
             JS.dispatch("dash:notifications__request_permissions")
             |> JS.push("start")
@@ -19,7 +19,7 @@
       <% end %>
 
       <%= if @state == :running do %>
-        <.button class="mt-10" phx-click="stop">Stop</.button>
+        <.button class="btn btn-primary mt-10" phx-click="stop">Stop</.button>
       <% end %>
     </section>
   <% end %>
@@ -28,4 +28,4 @@
       <p class="text-4xl font-extrabold">Timer finished</p>
     </section>
   <% end %>
-</div>
+</Layouts.app>

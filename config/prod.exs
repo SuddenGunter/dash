@@ -7,17 +7,17 @@ import Config
 # before starting your production server.
 config :dash, DashWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
-# Configures Swoosh API Client
-config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Dash.Finch
+# NOTE: we don't set `force_ssl` here (unlike the default Phoenix scaffold)
+# because HTTPS redirection is handled by the Fly.io proxy (`force_https` in fly.toml).
+
+# Configure Swoosh API Client
+config :swoosh, api_client: Swoosh.ApiClient.Req
 
 # Disable Swoosh Local Memory Storage
 config :swoosh, local: false
 
 # Do not print debug messages in production
-config :logger,
-  level: :info
-
-# TODO: fix metadata in logger
+config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.

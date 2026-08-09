@@ -15,8 +15,6 @@ defmodule Dash.Application do
       Dash.Timers.Supervisor,
       {Phoenix.PubSub, name: Dash.PubSub},
       {Dash.Timers.PredefinedTimers, initial_value: [30, 60, 120]},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Dash.Finch},
       # Start a worker by calling: Dash.Worker.start_link(arg)
       # {Dash.Worker, arg},
       # Start to serve requests, typically the last entry
