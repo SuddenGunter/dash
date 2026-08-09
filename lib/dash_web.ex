@@ -19,7 +19,7 @@ defmodule DashWeb do
 
   def static_paths,
     do:
-      ~w(assets fonts images  favicon.svg favicon.ico site.webmanifest favicon-48x48.png apple-touch-icon.png web-app-manifest-192x192.png web-app-manifest-512x512.png robots.txt)
+      ~w(assets fonts images favicon.svg favicon.ico site.webmanifest favicon-96x96.png apple-touch-icon.png web-app-manifest-192x192.png web-app-manifest-512x512.png robots.txt)
 
   def router do
     quote do
@@ -40,12 +40,11 @@ defmodule DashWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: DashWeb.Layouts]
+      use Phoenix.Controller, formats: [:html, :json]
+
+      use Gettext, backend: DashWeb.Gettext
 
       import Plug.Conn
-      use Gettext, backend: DashWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -53,8 +52,7 @@ defmodule DashWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {DashWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end
@@ -83,13 +81,16 @@ defmodule DashWeb do
 
   defp html_helpers do
     quote do
-      # HTML escaping functionality
-      import Phoenix.HTML
-      # Core UI components and translation
-      import DashWeb.CoreComponents
+      # Translation
       use Gettext, backend: DashWeb.Gettext
 
-      # Shortcut for generating JS commands
+      # HTML escaping functionality
+      import Phoenix.HTML
+      # Core UI components
+      import DashWeb.CoreComponents
+
+      # Common modules used in templates
+      alias DashWeb.Layouts
       alias Phoenix.LiveView.JS
 
       # Routes generation with the ~p sigil

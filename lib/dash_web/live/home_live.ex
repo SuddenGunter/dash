@@ -1,5 +1,4 @@
 defmodule DashWeb.HomeLive do
-  require Logger
   alias Dash.Timers.PredefinedTimers
   use DashWeb, :live_view
 
